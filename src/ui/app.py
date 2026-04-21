@@ -197,12 +197,14 @@ def init_gee():
         # 1. Try gcp_service_account format (from repo secrets.toml)
         if 'gcp_service_account' in st.secrets:
             info = dict(st.secrets['gcp_service_account'])
-            # Handle newlines in private_key
-            if 'private_key' in info and '\n' in info['private_key']:
-                info['private_key'] = info['private_key'].replace('\n', '\\n')
-            client_email = info.get('client_email')
-            private_key = info.get('private_key', '').replace('\\n', '\n')
+            client_email = info.get('client_email', '')
+            private_key = info.get('private_key', '')
             if client_email and private_key:
+                # Handle newlines
+                if '\n' in private_key:
+                    private_key = private_key.replace('\n', '\\n')
+                else:
+                    private_key = private_key.replace('\\n', '\n')
                 creds = ee.ServiceAccountCredentials(client_email, key_data=json.dumps({
                     **info,
                     'private_key': private_key
@@ -211,14 +213,10 @@ def init_gee():
                 return True
         # 2. Attempt Universal JSON String
         if 'GCP_JSON_KEY' in st.secrets:
-            import tempfile
             raw = st.secrets['GCP_JSON_KEY']
-            if isinstance(raw, str):
+            if isinstance(raw, str) and '\n' in raw:
                 raw = raw.replace('\n', '\\n')
-            with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
-                f.write(raw)
-                key_path = f.name
-            creds = ee.ServiceAccountCredentials(None, key_file=key_path)
+            creds = ee.ServiceAccountCredentials.from_service_account_info(json.loads(raw))
             ee.Initialize(creds, project=PROJECT_ID)
             return True
         elif 'EE_CLIENT_EMAIL' in st.secrets:
