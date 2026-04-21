@@ -200,7 +200,11 @@ def init_gee():
         # Prefer Streamlit's section-based secrets format on Cloud.
         if 'gcp_service_account' in st.secrets:
             st.write("DEBUG: Found gcp_service_account in secrets")
-            service_account_info = dict(st.secrets['gcp_service_account'])
+            raw_info = dict(st.secrets['gcp_service_account'])
+            # Escape actual newlines in private_key
+            if 'private_key' in raw_info and '\n' in raw_info['private_key']:
+                raw_info['private_key'] = raw_info['private_key'].replace('\n', '\\n')
+            service_account_info = raw_info
             st.write(f"DEBUG: client_email = {service_account_info.get('client_email')}")
             service_account_info = dict(st.secrets['gcp_service_account'])
             client_email = service_account_info.get("client_email")
@@ -214,9 +218,17 @@ def init_gee():
             ee.Initialize(creds, project=PROJECT_ID)
             return True
         if 'GCP_JSON_KEY' in st.secrets:
-            service_account_info = json.loads(st.secrets['GCP_JSON_KEY'])
+            st.write("DEBUG: Found GCP_JSON_KEY in secrets")
+            raw_json = st.secrets['GCP_JSON_KEY']
+            # Escape actual newlines to handle multi-line private keys
+            if isinstance(raw_json, str):
+                escaped = raw_json.replace('\n', '\\n')
+                service_account_info = json.loads(escaped)
+            else:
+                service_account_info = raw_json
             client_email = service_account_info.get("client_email")
             private_key = service_account_info.get("private_key", "").replace("\\n", "\n")
+            st.write(f"DEBUG: client_email = {client_email}")
             if not client_email or not private_key:
                 raise ValueError("GCP_JSON_KEY is missing client_email or private_key.")
             creds = ee.ServiceAccountCredentials(client_email, key_data=json.dumps({
