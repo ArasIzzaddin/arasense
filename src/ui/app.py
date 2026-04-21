@@ -192,31 +192,15 @@ PROJECT_ID = 'valid-shine-488311-d6'
 
 # Initialize GEE (Universal Enterprise Auth)
 def init_gee():
-    import json
     try:
-        # 1. Try gcp_service_account format (from repo secrets.toml)
-        if 'gcp_service_account' in st.secrets:
-            info = dict(st.secrets['gcp_service_account'])
-            client_email = info.get('client_email', '')
-            private_key = info.get('private_key', '')
-            if client_email and private_key:
-                # Handle newlines
-                if '\n' in private_key:
-                    private_key = private_key.replace('\n', '\\n')
-                else:
-                    private_key = private_key.replace('\\n', '\n')
-                creds = ee.ServiceAccountCredentials(client_email, key_data=json.dumps({
-                    **info,
-                    'private_key': private_key
-                }))
-                ee.Initialize(creds, project=PROJECT_ID)
-                return True
-        # 2. Attempt Universal JSON String
+        # 1. Attempt Universal JSON String
         if 'GCP_JSON_KEY' in st.secrets:
-            raw = st.secrets['GCP_JSON_KEY']
-            if isinstance(raw, str) and '\n' in raw:
-                raw = raw.replace('\n', '\\n')
-            creds = ee.ServiceAccountCredentials.from_service_account_info(json.loads(raw))
+            import json
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+                f.write(st.secrets['GCP_JSON_KEY'])
+                key_path = f.name
+            creds = ee.ServiceAccountCredentials(None, key_file=key_path)
             ee.Initialize(creds, project=PROJECT_ID)
             return True
         elif 'EE_CLIENT_EMAIL' in st.secrets:
