@@ -18,173 +18,206 @@ from climate.aras_eval import ArasDiagram
 from flood.graph_builder import ArasenseGraphBuilder
 
 # Page Config
-st.set_page_config(page_title="Arasense AI | Ultimate High-Performance Command Center", layout="wide")
+st.set_page_config(page_title="Arasense AI | Climate Intelligence Platform", page_icon="🌍", layout="wide")
 
-# --- TITAN LIVING VISUAL ENGINE CSS ---
+# --- PROFESSIONAL DESIGN SYSTEM ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Manrope:wght@300;600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
     
+    /* Base Styles */
     html, body, [data-testid="stApp"] {
-        font-family: 'Manrope', sans-serif;
-        background-color: #022c22;
-        font-size: 1.2rem;
+        font-family: 'Sora', sans-serif;
+        background: #0a0f1a;
     }
 
-    /* Neon Living Top Bar */
-    .top-brand-bar {
-        background: linear-gradient(90deg, #064e3b 0%, #10b981 100%);
-        padding: 30px 80px;
-        margin: -6rem -5rem 3rem -5rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
-        border-bottom: 3px solid rgba(255,255,255,0.2);
-        z-index: 999;
-        animation: neonPulse 4s infinite alternate;
-    }
-
-    @keyframes neonPulse {
-        from { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
-        to { box-shadow: 0 0 50px rgba(16, 185, 129, 0.5); }
-    }
-
+    /* Animated Background */
     .stApp {
-        background-image: linear-gradient(rgba(2, 44, 34, 0.5), rgba(2, 44, 34, 0.85)), 
-                          url("https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=2560&auto=format&fit=crop");
-        background-size: cover;
-        background-position: center;
+        background: 
+            radial-gradient(ellipse at 20% 0%, rgba(6, 78, 59, 0.4) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 100%, rgba(16, 185, 129, 0.2) 0%, transparent 40%),
+            linear-gradient(180deg, #0a0f1a 0%, #0d1a2d 50%, #0a0f1a 100%);
         background-attachment: fixed;
     }
 
-    /* Hide Sidebar entirely */
+    /* Hide Sidebar */
     [data-testid="stSidebar"] { display: none !important; }
 
-    /* Titan Typography Scaling */
-    .hero-title {
-        font-size: 7.5rem !important; /* Institutional scale */
+    /* Premium Header */
+    .premium-header {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 78, 59, 0.25) 100%);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 24px;
+        padding: 32px 48px;
+        margin-bottom: 40px;
+        backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .premium-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #10b981, transparent);
+    }
+
+    .premium-header h1 {
+        font-family: 'Sora', sans-serif;
+        font-size: 4.5rem !important;
         font-weight: 800 !important;
-        letter-spacing: -0.06em !important;
-        line-height: 0.95;
-        margin-top: 3rem;
-        margin-bottom: 25px;
-        color: #ffffff !important;
-        text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        background: linear-gradient(135deg, #ffffff 0%, #10b981 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0 !important;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
     }
 
-    .hero-subtitle {
-        font-size: 2.8rem !important;
-        color: #a7f3d0 !important;
-        font-weight: 300;
-        margin-bottom: 60px;
-        letter-spacing: 0.05em;
+    .premium-header .tagline {
+        font-size: 1.4rem;
+        color: rgba(255,255,255,0.7);
+        margin-top: 12px;
+        font-weight: 400;
     }
 
-    /* Massive Navigation Tabs */
+    .premium-header .version-badge {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        background: rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        color: #10b981;
+    }
+
+    /* Professional Tabs */
     .stTabs [data-baseweb="tab-list"] {
-        justify-content: center;
-        gap: 40px;
-        margin-bottom: 60px;
+        gap: 8px;
+        background: rgba(255,255,255,0.03);
+        padding: 8px;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.05);
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 100px;
-        font-size: 2rem !important;
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        padding: 0 80px;
-        color: #a7f3d0;
-        border: 2px solid rgba(255,255,255,0.1);
-        transition: all 0.4s ease;
+        background: transparent;
+        border-radius: 12px;
+        padding: 14px 32px;
+        font-size: 1.1rem !important;
+        font-weight: 600;
+        color: rgba(255,255,255,0.6);
+        border: none;
+        transition: all 0.3s ease;
     }
 
     .stTabs [aria-selected="true"] {
-        background-color: #10b981 !important;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
         color: white !important;
-        box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4);
-        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
     }
 
-    /* Horizontal Toolbar: Massive Labels */
-    .engine-toolbar {
-        background: rgba(255,255,255,0.1);
-        padding: 45px;
-        border-radius: 25px;
-        margin-bottom: 50px;
-        border: 2px solid rgba(255,255,255,0.2);
-        backdrop-filter: blur(20px);
-    }
-    
-    label, .stMarkdown p, .stRadio, .stSelectbox {
-        font-size: 1.6rem !important;
-        font-weight: 700 !important;
-        color: #ecfdf5 !important;
+    /* Cards */
+    .premium-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 28px;
+        backdrop-filter: blur(10px);
     }
 
-    /* Living Metric Cards */
+    /* Metric Cards */
     .stMetric {
-        background: rgba(255, 255, 255, 0.06) !important;
-        border: 2px solid rgba(16, 185, 129, 0.2) !important;
-        border-radius: 30px !important;
-        padding: 60px !important;
-        backdrop-filter: blur(25px) !important;
-        transition: all 0.4s ease;
-    }
-
-    .stMetric:hover {
-        background: rgba(16, 185, 129, 0.05) !important;
-        border-color: #10b981 !important;
-        box-shadow: 0 0 50px rgba(16, 185, 129, 0.3);
-        transform: scale(1.02);
+        background: rgba(16, 185, 129, 0.08) !important;
+        border: 1px solid rgba(16, 185, 129, 0.2) !important;
+        border-radius: 16px !important;
+        padding: 24px !important;
     }
 
     [data-testid="stMetricValue"] {
-        font-size: 6rem !important;
-        font-weight: 800 !important;
-        color: #ffffff !important;
+        font-size: 2.5rem !important;
+        font-weight: 700 !important;
+        color: #10b981 !important;
     }
 
     [data-testid="stMetricLabel"] {
-        font-size: 2rem !important;
-        color: #a7f3d0 !important;
+        font-size: 0.9rem !important;
+        color: rgba(255,255,255,0.6) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 
-    h2, h3 { 
-        font-size: 4rem !important; 
-        margin-top: 4rem !important; 
-        color: #ffffff !important;
-        font-weight: 800 !important;
-    }
-
-    /* Massive Living Action Button */
+    /* Buttons */
     .stButton > button {
-        font-size: 2.2rem !important;
-        font-weight: 900 !important;
-        letter-spacing: 0.05em !important;
-        padding: 40px 80px !important;
-        border-radius: 30px !important;
         background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
         color: white !important;
-        border: 2px solid rgba(255,255,255,0.2) !important;
-        box-shadow: 0 20px 50px rgba(16, 185, 129, 0.5) !important;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-        text-transform: uppercase;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 14px 32px !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3) !important;
     }
     
     .stButton > button:hover {
-        transform: scale(1.05) translateY(-5px);
-        box-shadow: 0 30px 70px rgba(16, 185, 129, 0.7) !important;
-        border-color: white !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5) !important;
+    }
+
+    /* Inputs */
+    .stTextInput > div > div, .stSelectbox > div > div, .stDateInput > div > div {
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 10px !important;
+    }
+
+    /* Info Boxes */
+    .stAlert {
+        background: rgba(16, 185, 129, 0.1) !important;
+        border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        border-radius: 12px !important;
+    }
+
+    /* Headers */
+    h1, h2, h3 {
+        font-family: 'Sora', sans-serif !important;
+        color: white !important;
+    }
+    
+    h2 { font-size: 2rem !important; font-weight: 700 !important; }
+    h3 { font-size: 1.5rem !important; font-weight: 600 !important; }
+
+    /* Divider */
+    hr {
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+
+    /* Footer */
+    .premium-footer {
+        text-align: center;
+        padding: 30px;
+        color: rgba(255,255,255,0.4);
+        font-size: 0.9rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
+        margin-top: 60px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- TOP BRAND BAR ---
+# --- PREMIUM HEADER ---
 st.markdown("""
-    <div class="top-brand-bar">
-        <h2 style='margin:0; color:white; font-size: 2.8rem !important; font-family:Manrope; font-weight:800;'>ARASENSE <span style='font-weight:300; opacity:0.8;'>AI</span></h2>
-        <div style='color:white; font-family:monospace; font-size:1.2rem; border-left: 3px solid rgba(255,255,255,0.3); padding-left:40px; letter-spacing:0.1em;'>HIGH-PERFORMANCE COMMAND CENTER | V2.4</div>
+    <div class="premium-header">
+        <div class="version-badge">V3.0</div>
+        <h1>🌍 ARASENSE AI</h1>
+        <p class="tagline">Institutional-Grade Climate Risk Analytics & AI Predictive Engines</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -194,9 +227,6 @@ PROJECT_ID = 'valid-shine-488311-d6'
 # Initialize GEE (Universal Enterprise Auth)
 def init_gee():
     try:
-        st.write("DEBUG: Checking secrets...")
-        st.write(f"DEBUG: Secrets keys: {list(st.secrets.keys()) if hasattr(st.secrets, 'keys') else 'N/A'}")
-        
         # Prefer Streamlit's section-based secrets format on Cloud.
         if 'gcp_service_account' in st.secrets:
             st.write("DEBUG: Found gcp_service_account in secrets")
@@ -218,7 +248,6 @@ def init_gee():
             ee.Initialize(creds, project=PROJECT_ID)
             return True
         if 'GCP_JSON_KEY' in st.secrets:
-            st.write("DEBUG: Found GCP_JSON_KEY in secrets")
             raw_json = st.secrets['GCP_JSON_KEY']
             # Escape actual newlines to handle multi-line private keys
             if isinstance(raw_json, str):
@@ -277,22 +306,34 @@ tab_home, tab_climate, tab_flood = st.tabs([
 ])
 
 with tab_home:
-    st.markdown('<h1 class="hero-title">ARASENSE AI</h1>', unsafe_allow_html=True)
-    st.markdown('<p class="hero-subtitle">Institutional Climate Intelligence & Topological Risk Prediction</p>', unsafe_allow_html=True)
+    # Quick Stats
+    col_stats1, col_stats2, col_stats3, col_stats4 = st.columns(4)
+    with col_stats1:
+        st.metric("Models Evaluated", "50+", "CMIP6/CORDEX")
+    with col_stats2:
+        st.metric("Data Sources", "3", "NASA/ECMWF")
+    with col_stats3:
+        st.metric("Speedup", "1000x", "vs HEC-RAS")
+    with col_stats4:
+        st.metric("Coverage", "Global", "24/7 API")
     
     st.markdown("---")
     
-    # Section 1: The Narrative Deep-Dive
+    # About Section
     st.markdown("""
-    <div style='background: rgba(255,255,255,0.05); padding: 60px; border-radius: 40px; margin-bottom: 60px; backdrop-filter: blur(30px); border: 2px solid rgba(255,255,255,0.1);'>
-        <h2 style='margin-top:0;'>🌍 Bridging Scientific Research & Climate Resilience</h2>
-        <p style='font-size: 2rem; line-height: 1.6;'>
-            Arasense AI translates complex climate physics into actionable risk intelligence. 
-            Our platform leverages the <b>Aras Diagram</b>—a foundational leap in model diagnostic precision—to ensure 
-            institutional decision-makers rely only on the most accurate environmental data.
+    <div class="premium-card" style='margin-bottom: 30px;'>
+        <h2 style='margin-top:0; color:#10b981 !important;'>🔬 Scientific Foundation</h2>
+        <p style='font-size: 1.2rem; line-height: 1.7; color: rgba(255,255,255,0.8);'>
+            Arasense AI is a professional climate intelligence platform that translates complex climate physics 
+            into actionable institutional risk data. Developed at the <b>Technical University of Bari (Poliba)</b>, 
+            the platform bridges the gap between academic peer-reviewed research and enterprise-level climate adaptation strategies.
         </p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Core Pillars
+    st.subheader("Core Business Intelligence Pillars")
+    col_p1, col_p2 = st.columns(2)
 
     # Section 2: Immersive Pillar Gallery
     st.subheader("Core Business Intelligence Pillars")
