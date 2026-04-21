@@ -153,31 +153,29 @@ st.markdown("""
 # Constants
 PROJECT_ID = 'valid-shine-488311-d6'
 
-# Initialize GEE (Robust Cloud/Local Auth)
+# Initialize GEE (Enhanced Diagnostic Auth)
 try:
-    if 'gcp_service_account' in st.secrets:
+    if 'EE_CLIENT_EMAIL' in st.secrets:
+        # SIMPLIFIED FLAT FORMAT
+        creds = ee.ServiceAccountCredentials(st.secrets["EE_CLIENT_EMAIL"], key_data=st.secrets["EE_PRIVATE_KEY"])
+        ee.Initialize(creds, project=PROJECT_ID)
+    elif 'gcp_service_account' in st.secrets:
         # NESTED FORMAT
         s = st.secrets["gcp_service_account"]
         creds = ee.ServiceAccountCredentials(s["client_email"], key_data=s["private_key"])
-        ee.Initialize(creds, project=PROJECT_ID)
-    elif 'client_email' in st.secrets:
-        # FLAT FORMAT
-        creds = ee.ServiceAccountCredentials(st.secrets["client_email"], key_data=st.secrets["private_key"])
         ee.Initialize(creds, project=PROJECT_ID)
     else:
         # LOCAL FALLBACK
         ee.Initialize(project=PROJECT_ID)
 except Exception as e:
-    st.error(f"Earth Engine Auth Failed: {e}")
-    st.markdown("""
-    ### 🔑 Action Required: Cloud Authentication
-    The app is running in the cloud but cannot find your Google Earth Engine key.
+    st.error(f"Earth Engine Initialization Failed: {e}")
     
-    **How to fix:**
-    1. Go to your **Streamlit Cloud Dashboard**.
-    2. Click **Settings** -> **Secrets**.
-    3. Paste your Service Account JSON data using the template provided by the developer.
-    """)
+    with st.expander("🔍 DEBUG: SYSTEM AUTH STATUS"):
+        st.write("Current Keys Detected in Secrets:", list(st.secrets.keys()))
+        if not st.secrets:
+            st.warning("⚠️ No secrets detected. Please check your Streamlit Cloud Settings.")
+        else:
+            st.info("💡 Hint: If you see your keys listed above but still get an error, ensure you registered the email at signup.earthengine.google.com")
     st.stop()
 
 # --- TOP NAVIGATION TABS (BRANCHES) ---
