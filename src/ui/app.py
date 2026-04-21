@@ -153,30 +153,38 @@ st.markdown("""
 # Constants
 PROJECT_ID = 'valid-shine-488311-d6'
 
-# Initialize GEE (Enhanced Diagnostic Auth)
-try:
-    if 'EE_CLIENT_EMAIL' in st.secrets:
-        # SIMPLIFIED FLAT FORMAT
-        creds = ee.ServiceAccountCredentials(st.secrets["EE_CLIENT_EMAIL"], key_data=st.secrets["EE_PRIVATE_KEY"])
-        ee.Initialize(creds, project=PROJECT_ID)
-    elif 'gcp_service_account' in st.secrets:
-        # NESTED FORMAT
-        s = st.secrets["gcp_service_account"]
-        creds = ee.ServiceAccountCredentials(s["client_email"], key_data=s["private_key"])
-        ee.Initialize(creds, project=PROJECT_ID)
-    else:
-        # LOCAL FALLBACK
+# Initialize GEE (Absolute Fail-Safe Auth)
+def init_gee():
+    try:
+        # 1. Attempt Streamlit Secrets (Most Secure)
+        if 'EE_CLIENT_EMAIL' in st.secrets and 'EE_PRIVATE_KEY' in st.secrets:
+            creds = ee.ServiceAccountCredentials(st.secrets["EE_CLIENT_EMAIL"], key_data=st.secrets["EE_PRIVATE_KEY"])
+            ee.Initialize(creds, project=PROJECT_ID)
+            return True
+        elif 'gcp_service_account' in st.secrets:
+            s = st.secrets["gcp_service_account"]
+            pk = s.get("private_key", "")
+            creds = ee.ServiceAccountCredentials(s["client_email"], key_data=pk)
+            ee.Initialize(creds, project=PROJECT_ID)
+            return True
+        elif 'client_email' in st.secrets:
+            creds = ee.ServiceAccountCredentials(st.secrets["client_email"], key_data=st.secrets.get("private_key", ""))
+            ee.Initialize(creds, project=PROJECT_ID)
+            return True
+            
+        # 2. Local Fallback (For laptop use)
         ee.Initialize(project=PROJECT_ID)
-except Exception as e:
-    st.error(f"Earth Engine Initialization Failed: {e}")
-    
-    with st.expander("🔍 DEBUG: SYSTEM AUTH STATUS"):
-        st.write("Current Keys Detected in Secrets:", list(st.secrets.keys()))
-        if not st.secrets:
-            st.warning("⚠️ No secrets detected. Please check your Streamlit Cloud Settings.")
-        else:
-            st.info("💡 Hint: If you see your keys listed above but still get an error, ensure you registered the email at signup.earthengine.google.com")
-    st.stop()
+        return True
+    except Exception as e:
+        # 3. Final Error Catch
+        st.error(f"Engine Connection Failed: {e}")
+        with st.expander("🛠️ AUTHENTICATION TROUBLESHOOTER"):
+            st.write("Detected System Keys:", list(st.secrets.keys()))
+            st.info("Check if your Secret Key includes the BEGIN/END PRIVATE KEY lines.")
+        st.stop()
+
+# Run Init
+init_gee()
 
 # --- TOP NAVIGATION TABS (BRANCHES) ---
 tab_home, tab_climate, tab_flood = st.tabs([
