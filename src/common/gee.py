@@ -30,9 +30,9 @@ def _get_st_secrets():
     """Try to get secrets from Streamlit if available."""
     try:
         import streamlit as st
-        if hasattr(st, 'secrets') and st.secrets:
-            return st.secrets
-    except:
+        if hasattr(st, 'secrets'):
+            return dict(st.secrets)
+    except Exception:
         pass
     return None
 
