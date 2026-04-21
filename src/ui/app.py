@@ -153,27 +153,32 @@ st.markdown("""
 # Constants
 PROJECT_ID = 'valid-shine-488311-d6'
 
-# Initialize GEE (Supports Local and Cloud Deployment)
+# Initialize GEE (Robust Cloud/Local Auth)
 try:
-    # Check if we have VALID cloud secrets (not just placeholders)
-    if 'gcp_service_account' in st.secrets and st.secrets["gcp_service_account"]["private_key"] != "PASTE_HERE":
-        # CLOUD DEPLOYMENT MODE
-        creds = ee.ServiceAccountCredentials(
-            st.secrets["gcp_service_account"]["client_email"],
-            st.secrets["gcp_service_account"]["private_key"]
-        )
+    if 'gcp_service_account' in st.secrets:
+        # NESTED FORMAT
+        s = st.secrets["gcp_service_account"]
+        creds = ee.ServiceAccountCredentials(s["client_email"], key_data=s["private_key"])
+        ee.Initialize(creds, project=PROJECT_ID)
+    elif 'client_email' in st.secrets:
+        # FLAT FORMAT
+        creds = ee.ServiceAccountCredentials(st.secrets["client_email"], key_data=st.secrets["private_key"])
         ee.Initialize(creds, project=PROJECT_ID)
     else:
-        # LOCAL DEVELOPMENT MODE (Default)
+        # LOCAL FALLBACK
         ee.Initialize(project=PROJECT_ID)
 except Exception as e:
-    # Final Fallback for local users who might need to initialize without project first
-    try:
-        ee.Initialize()
-    except:
-        st.error(f"Failed to initialize Earth Engine: {e}")
-        st.info("💡 Deployment Tip: For 24/7 web access, ensure the GCP Service Account key is added to Streamlit Cloud Secrets.")
-        st.stop()
+    st.error(f"Earth Engine Auth Failed: {e}")
+    st.markdown("""
+    ### 🔑 Action Required: Cloud Authentication
+    The app is running in the cloud but cannot find your Google Earth Engine key.
+    
+    **How to fix:**
+    1. Go to your **Streamlit Cloud Dashboard**.
+    2. Click **Settings** -> **Secrets**.
+    3. Paste your Service Account JSON data using the template provided by the developer.
+    """)
+    st.stop()
 
 # --- TOP NAVIGATION TABS (BRANCHES) ---
 tab_home, tab_climate, tab_flood = st.tabs([
