@@ -153,21 +153,28 @@ st.markdown("""
 # Constants
 PROJECT_ID = 'valid-shine-488311-d6'
 
-# Initialize GEE (Enhanced Diagnostic Auth with Setup Assistant)
+# Initialize GEE (Universal Enterprise Auth)
 def init_gee():
     try:
-        # 1. Attempt Streamlit Secrets
-        if 'EE_CLIENT_EMAIL' in st.secrets:
-            creds = ee.ServiceAccountCredentials(st.secrets["EE_CLIENT_EMAIL"], key_data=st.secrets["EE_PRIVATE_KEY"])
-            ee.Initialize(creds, project=PROJECT_ID)
-            return True
-        elif 'gcp_service_account' in st.secrets:
-            s = st.secrets["gcp_service_account"]
-            creds = ee.ServiceAccountCredentials(s["client_email"], key_data=s.get("private_key", ""))
+        # 1. Attempt Universal JSON String (Absolute Robustness)
+        if 'GCP_JSON_KEY' in st.secrets:
+            import json
+            import tempfile
+            # Create a temporary file for the key
+            with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+                f.write(st.secrets['GCP_JSON_KEY'])
+                key_path = f.name
+            creds = ee.ServiceAccountCredentials(None, key_file=key_path)
             ee.Initialize(creds, project=PROJECT_ID)
             return True
             
-        # 2. Local Fallback
+        # 2. Attempt Individual Keys
+        elif 'EE_CLIENT_EMAIL' in st.secrets:
+            creds = ee.ServiceAccountCredentials(st.secrets["EE_CLIENT_EMAIL"], key_data=st.secrets["EE_PRIVATE_KEY"])
+            ee.Initialize(creds, project=PROJECT_ID)
+            return True
+            
+        # 3. Local Fallback
         ee.Initialize(project=PROJECT_ID)
         return True
     except Exception as e:
@@ -178,20 +185,11 @@ def init_gee():
             json_input = st.text_area("Paste the entire content of your downloaded Google Cloud JSON file here:", height=200)
             
             if json_input:
-                try:
-                    import json
-                    data = json.loads(json_input)
-                    email = data.get("client_email")
-                    pk = data.get("private_key")
-                    
-                    st.success("✅ JSON Parsed Successfully!")
-                    st.markdown("### 2. Copy this code")
-                    st.code(f'EE_CLIENT_EMAIL = "{email}"\nEE_PRIVATE_KEY = """{pk}"""', language="toml")
-                    
-                    st.markdown("### 3. Paste into Streamlit Cloud")
-                    st.write("Go to **Settings** -> **Secrets** in your Streamlit dashboard and paste the code above.")
-                except Exception as parse_err:
-                    st.error(f"Could not parse JSON: {parse_err}")
+                st.success("✅ JSON Detected!")
+                st.markdown("### 2. Copy this WHOLE block")
+                st.code(f'GCP_JSON_KEY = \'\'\'{json_input}\'\'\'', language="toml")
+                st.markdown("### 3. Paste into Streamlit Secrets")
+                st.write("Go to **Settings** -> **Secrets** and replace EVERYTHING with the block above.")
         st.stop()
 
 # Run Init
