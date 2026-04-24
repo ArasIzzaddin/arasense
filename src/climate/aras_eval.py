@@ -80,18 +80,21 @@ class ArasDiagram:
         for i, res in enumerate(self.results):
             color = cmap(i % 20)
             
-            # Segment (Correlation Influence)
+            # Line connecting (x2, y2) to (alpha, beta)
             ax.plot([res['x2'], res['alpha']], [res['y2'], res['beta']], 
-                    color=color, linestyle='-', alpha=0.7, linewidth=2)
+                    color=color, linestyle='-', alpha=0.8, linewidth=3)
             
-            # Point (alpha, beta)
-            ax.scatter(res['alpha'], res['beta'], color=color, s=120, edgecolors='white', zorder=5)
+            # Point (x2, y2) - Combined KGE point (smaller, with X marker)
+            ax.scatter(res['x2'], res['y2'], color=color, s=200, marker='X', 
+                      edgecolors='white', linewidths=2, zorder=6)
             
-            # Point (x2, y2)
-            ax.scatter(res['x2'], res['y2'], color=color, s=60, marker='x', alpha=0.8, zorder=5)
+            # Point (alpha, beta) - Bias-Variability point (larger circle)
+            ax.scatter(res['alpha'], res['beta'], color=color, s=300, 
+                      edgecolors='white', linewidths=2, zorder=5)
             
             # Label
-            ax.text(res['alpha'], res['beta'], f" {res['name']}", color='white', fontsize=9, alpha=0.9)
+            ax.text(res['alpha'], res['beta'], f" {res['name']}", color='white', 
+                   fontsize=10, fontweight='bold', alpha=0.9)
 
         # Formatting
         ax.set_xlim(-lim, lim)
@@ -104,11 +107,14 @@ class ArasDiagram:
         
         # Custom Legend
         legend_elements = [
-            Line2D([0], [0], marker='o', color='gray', label='Bias-Variability (α, β)', markersize=10, linestyle='None'),
-            Line2D([0], [0], marker='x', color='gray', label='Combined KGE Point (x2, y2)', markersize=8, linestyle='None'),
-            Line2D([0], [0], color='gray', linestyle='-', label='Correlation Influence')
+            Line2D([0], [0], marker='o', color='gray', label='(α, β) - Bias + Variability', 
+                   markersize=12, linestyle='None', markeredgecolor='white'),
+            Line2D([0], [0], marker='X', color='gray', label='(x₂, y₂) - Combined KGE', 
+                   markersize=12, linestyle='None', markeredgecolor='white'),
+            Line2D([0], [0], color='gray', linestyle='-', linewidth=3, label='Correlation Influence')
         ]
-        leg = ax.legend(handles=legend_elements, loc='lower left', fontsize=10, facecolor='black', edgecolor='white')
+        leg = ax.legend(handles=legend_elements, loc='upper right', fontsize=11, 
+                       facecolor='#1a1a1a', edgecolor='white', framealpha=0.9)
         for text in leg.get_texts():
             text.set_color('white')
 
