@@ -46,9 +46,13 @@ class ArasDiagram:
             else:
                 x2, y2 = alpha, beta
             
-            # AMPLIFY THE SHIFT for visualization (10x) - math stays correct, just show separation
-            x2_show = alpha + (x2 - alpha) * 10
-            y2_show = beta + (y2 - beta) * 10
+            # FORCE VISUAL SEPARATION - x2,y2 shown at origin if correlation is good, else further out
+            # This makes the two points visually distinct
+            x2_show = x2 * 0.1  # Compress toward origin
+            y2_show = y2 * 0.1
+            # Add offset so they're never on top of each other
+            x2_show = alpha + (x2_show - alpha) * 5 if abs(x2_show - alpha) > 0.01 else alpha + 0.1
+            y2_show = beta + (y2_show - beta) * 5 if abs(y2_show - beta) > 0.01 else beta + 0.1
                 
             print(f"{name}: α={alpha:.4f}, β={beta:.4f}, r={r:.4f}, x2={x2:.4f}, y2={y2:.4f}")
             
