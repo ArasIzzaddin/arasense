@@ -45,6 +45,10 @@ class ArasDiagram:
                 y2 = beta + mmkge * (beta / el)
             else:
                 x2, y2 = alpha, beta
+            
+            # AMPLIFY THE SHIFT for visualization (10x) - math stays correct, just show separation
+            x2_show = alpha + (x2 - alpha) * 10
+            y2_show = beta + (y2 - beta) * 10
                 
             print(f"{name}: α={alpha:.4f}, β={beta:.4f}, r={r:.4f}, x2={x2:.4f}, y2={y2:.4f}")
             
@@ -58,6 +62,8 @@ class ArasDiagram:
                 'el': el,
                 'x2': x2,
                 'y2': y2,
+                'x2_show': x2_show,
+                'y2_show': y2_show,
                 'e_total': mkge * 100 # Total percentage error
             })
 
@@ -83,11 +89,11 @@ class ArasDiagram:
             color = cmap(i % 20)
             
             # Line connecting (x2, y2) to (alpha, beta)
-            ax.plot([res['x2'], res['alpha']], [res['y2'], res['beta']], 
+            ax.plot([res['x2_show'], res['alpha']], [res['y2_show'], res['beta']], 
                     color=color, linestyle='-', alpha=0.8, linewidth=3)
             
             # Point (x2, y2) - Combined KGE point (X marker in different style)
-            ax.scatter(res['x2'], res['y2'], color='yellow', s=200, marker='X', 
+            ax.scatter(res['x2_show'], res['y2_show'], color='yellow', s=200, marker='X', 
                       edgecolors='orange', linewidths=2, zorder=6)
             
             # Point (alpha, beta) - Bias-Variability point (circle - WHITE edge)
