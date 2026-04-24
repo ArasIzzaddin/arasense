@@ -40,12 +40,14 @@ class ArasDiagram:
             mmkge = mkge - el
             
             # Projected points (x2, y2)
-            if el != 0:
+            if el > 0.0001:
                 x2 = alpha + mmkge * (alpha / el)
                 y2 = beta + mmkge * (beta / el)
             else:
-                x2, y2 = 0, 0
+                x2, y2 = alpha, beta
                 
+            print(f"{name}: α={alpha:.4f}, β={beta:.4f}, r={r:.4f}, x2={x2:.4f}, y2={y2:.4f}")
+            
             self.results.append({
                 'name': name,
                 'alpha': alpha,
@@ -84,13 +86,15 @@ class ArasDiagram:
             ax.plot([res['x2'], res['alpha']], [res['y2'], res['beta']], 
                     color=color, linestyle='-', alpha=0.8, linewidth=3)
             
-            # Point (x2, y2) - Combined KGE point (smaller, with X marker)
-            ax.scatter(res['x2'], res['y2'], color=color, s=200, marker='X', 
-                      edgecolors='white', linewidths=2, zorder=6)
+            # Point (x2, y2) - Combined KGE point (X marker in different style)
+            ax.scatter(res['x2'], res['y2'], color='yellow', s=200, marker='X', 
+                      edgecolors='orange', linewidths=2, zorder=6)
             
-            # Point (alpha, beta) - Bias-Variability point (larger circle)
-            ax.scatter(res['alpha'], res['beta'], color=color, s=300, 
-                      edgecolors='white', linewidths=2, zorder=5)
+            # Point (alpha, beta) - Bias-Variability point (circle - WHITE edge)
+            ax.scatter(res['alpha'], res['beta'], color='none', s=300, 
+                      edgecolors='white', linewidths=3, zorder=5)
+            ax.scatter(res['alpha'], res['beta'], color=color, s=200, 
+                      edgecolors=color, linewidths=2, zorder=6)
             
             # Label
             ax.text(res['alpha'], res['beta'], f" {res['name']}", color='white', 
