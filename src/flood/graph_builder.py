@@ -3,6 +3,8 @@ import numpy as np
 import torch
 from torch_geometric.data import Data
 
+from common.gee import initialize_earth_engine
+
 class ArasenseGraphBuilder:
     """
     Builds a hydrological graph from Digital Elevation Models (DEM).
@@ -11,7 +13,7 @@ class ArasenseGraphBuilder:
     
     def __init__(self, project_id):
         try:
-            ee.Initialize(project=project_id)
+            initialize_earth_engine(project_id)
         except Exception as e:
             print(f"Error: {e}")
 

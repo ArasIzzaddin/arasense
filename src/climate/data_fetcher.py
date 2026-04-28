@@ -2,6 +2,8 @@ import ee
 import pandas as pd
 import numpy as np
 
+from common.gee import initialize_earth_engine
+
 class ArasenseDataFetcher:
     """
     Data fetcher for Arasense platform.
@@ -10,7 +12,7 @@ class ArasenseDataFetcher:
     
     def __init__(self, project_id):
         try:
-            ee.Initialize(project=project_id)
+            initialize_earth_engine(project_id)
             print(f"Arasense: Initialized with project {project_id}")
         except Exception as e:
             print(f"Error initializing Earth Engine: {e}")

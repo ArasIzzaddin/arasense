@@ -1,6 +1,8 @@
 import ee
 import numpy as np
 
+from common.gee import initialize_earth_engine
+
 class ArasenseFloodFetcher:
     """
     Fetches Sentinel-1 SAR flood masks from Earth Engine.
@@ -9,7 +11,7 @@ class ArasenseFloodFetcher:
     
     def __init__(self, project_id):
         try:
-            ee.Initialize(project=project_id)
+            initialize_earth_engine(project_id)
         except Exception as e:
             print(f"Error: {e}")
 

@@ -941,7 +941,7 @@ def root() -> str:
       metricGrid.innerHTML = values.map((item) => `<div class="metric"><strong>${item.value}</strong><span>${item.label}</span></div>`).join('');
     }
 
-function renderArasDiagram(metrics) {
+    function renderArasDiagram(metrics) {
       if (!metrics || !metrics.length) {
         diagramShell.innerHTML = '<div class="diagram-placeholder">No climate metrics available for diagram rendering.</div>';
         return;
@@ -950,77 +950,9 @@ function renderArasDiagram(metrics) {
       const width = 760;
       const height = 420;
       const pad = 56;
-      
-      // Include all values for scale calculation
       const values = [];
       metrics.forEach((item) => {
-        values.push(item.alpha, item.beta, item.x2, item.y2);
-      });
-      
-      const maxVal = Math.max(0.5, ...values.map((value) => Math.abs(Number(value || 0)))) * 1.3;
-      const toX = (value) => pad + ((value + maxVal) / (2 * maxVal)) * (width - pad * 2);
-      const toY = (value) => height - pad - ((value + maxVal) / (2 * maxVal)) * (height - pad * 2);
-      
-      const colors = ['#2166AC', '#4DAC26', '#F4A582', '#D6604D', '#92189B', '#1F78B4', '#33A02C'];
-
-      // Reference circles (KGE distance)
-      const circles = [0.25, 0.5, 0.75, 1.0, 1.25].map((r) => {
-        const rr = ((r * (width - pad * 2)) / (2 * maxVal));
-        return `<circle cx="${toX(0)}" cy="${toY(0)}" r="${rr}" fill="none" stroke="rgba(200,200,200,0.5)" stroke-dasharray="4 4" stroke-width="1" />`;
-      }).join('');
-
-      const diagramElements = metrics.map((item, index) => {
-        const alpha = Number(item.alpha);
-        const beta = Number(item.beta);
-        const x2 = Number(item.x2);
-        const y2 = Number(item.y2);
-        const color = colors[index % colors.length];
-        
-        const ax = toX(alpha);
-        const ay = toY(beta);
-        const x2x = toX(x2);
-        const x2y = toY(y2);
-        
-        return `
-          <line x1="${x2x}" y1="${x2y}" x2="${ax}" y2="${ay}" stroke="${color}" stroke-width="2.5" opacity="0.8" />
-          <circle cx="${x2x}" cy="${x2y}" r="6" fill="${color}" opacity="0.7" />
-          <circle cx="${ax}" cy="${ay}" r="10" fill="${color}" stroke="white" stroke-width="2" />
-          <text x="${ax + 12}" y="${ay - 5}" fill="#333" font-size="11" font-weight="bold">${item.name}</text>
-        `;
-      }).join('');
-
-      const legend = `
-        <g transform="translate(${width - 160}, 20)">
-          <circle cx="10" cy="10" r="8" fill="#2166AC" stroke="white" stroke-width="2" />
-          <text x="25" y="14" fill="#666" font-size="10">(α, β) bias+variability</text>
-          <circle cx="10" cy="35" r="5" fill="#2166AC" opacity="0.7" />
-          <text x="25" y="39" fill="#666" font-size="10">(x₂, y₂) full error</text>
-          <line x1="5" y1="55" x2="20" y2="55" stroke="#2166AC" stroke-width="2.5" />
-          <text x="25" y="59" fill="#666" font-size="10">Correlation influence</text>
-          <line x1="7" y1="78" x2="17" y2="88" stroke="black" stroke-width="2" />
-          <text x="25" y="85" fill="#666" font-size="10">Perfect model (origin)</text>
-        </g>
-      `;
-
-      diagramShell.innerHTML = `
-        <svg viewBox="0 0 ${width} ${height}" style="background:white;border-radius:18px;">
-          ${circles}
-          <line x1="${toX(-maxVal)}" y1="${toY(0)}" x2="${toX(maxVal)}" y2="${toY(0)}" stroke="black" stroke-width="1" />
-          <line x1="${toX(0)}" y1="${toY(-maxVal)}" x2="${toX(0)}" y2="${toY(maxVal)}" stroke="black" stroke-width="1" />
-          <text x="${width / 2}" y="${height - 10}" text-anchor="middle" fill="#333" font-size="12">Bias ratio − 1 (α)</text>
-          <text x="15" y="${height / 2}" fill="#333" font-size="12" transform="rotate(-90 15 ${height / 2})">Variability ratio − 1 (β)</text>
-          ${diagramElements}
-          ${legend}
-        </svg>
-      `;
-    }
-
-      const width = 760;
-      const height = 420;
-      const pad = 56;
-      const values = [];
-      metrics.forEach((item) => {
-        values.push(item.alpha, item.beta, item.x2, item.y2);
+        values.push(item.alpha, item.beta);
       });
       const maxVal = Math.max(0.5, ...values.map((value) => Math.abs(Number(value || 0)))) * 1.2;
       const toX = (value) => pad + ((value + maxVal) / (2 * maxVal)) * (width - pad * 2);
@@ -1032,36 +964,15 @@ function renderArasDiagram(metrics) {
         return `<circle cx="${toX(0)}" cy="${toY(0)}" r="${rr}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-dasharray="4 6" />`;
       }).join('');
 
-      const diagramElements = metrics.map((item, index) => {
-        const alpha = Number(item.alpha);
-        const beta = Number(item.beta);
-        const x2 = Number(item.x2);
-        const y2 = Number(item.y2);
+      const labels = metrics.map((item, index) => {
+        const x = toX(Number(item.alpha));
+        const y = toY(Number(item.beta));
         const color = colors[index % colors.length];
-        
-        const ax = toX(alpha);
-        const ay = toY(beta);
-        const x2x = toX(x2);
-        const x2y = toY(y2);
-        
         return `
-          <line x1="${x2x}" y1="${x2y}" x2="${ax}" y2="${ay}" stroke="${color}" stroke-width="3" opacity="0.7" />
-          <circle cx="${x2x}" cy="${x2y}" r="8" fill="yellow" stroke="orange" stroke-width="2" />
-          <circle cx="${ax}" cy="${ay}" r="12" fill="${color}" stroke="white" stroke-width="2" />
-          <text x="${ax + 12}" y="${ay - 8}" fill="#dffcf1" font-size="12" font-weight="bold">${item.name}</text>
+          <circle cx="${x}" cy="${y}" r="6" fill="${color}" />
+          <text x="${x + 10}" y="${y - 10}" fill="#dffcf1" font-size="12">${item.name}</text>
         `;
       }).join('');
-
-      const legend = `
-        <g transform="translate(${width - 150}, 20)">
-          <circle cx="10" cy="10" r="8" fill="#8bf0c7" stroke="white" stroke-width="2" />
-          <text x="25" y="14" fill="#9bc9c0" font-size="11">(α, β)</text>
-          <circle cx="10" cy="35" r="6" fill="yellow" stroke="orange" stroke-width="2" />
-          <text x="25" y="39" fill="#9bc9c0" font-size="11">(x₂, y₂)</text>
-          <line x1="5" y1="55" x2="20" y2="55" stroke="#8bf0c7" stroke-width="3" />
-          <text x="25" y="59" fill="#9bc9c0" font-size="11">Correlation</text>
-        </g>
-      `;
 
       diagramShell.innerHTML = `
         <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Aras Diagram">
@@ -1069,10 +980,9 @@ function renderArasDiagram(metrics) {
           ${circles}
           <line x1="${toX(-maxVal)}" y1="${toY(0)}" x2="${toX(maxVal)}" y2="${toY(0)}" stroke="rgba(255,255,255,0.25)" />
           <line x1="${toX(0)}" y1="${toY(-maxVal)}" x2="${toX(0)}" y2="${toY(maxVal)}" stroke="rgba(255,255,255,0.25)" />
-          <text x="${width / 2}" y="${height - 16}" text-anchor="middle" fill="#9bc9c0" font-size="13">Bias ratio - 1 (α)</text>
-          <text x="18" y="${height / 2}" text-anchor="middle" fill="#9bc9c0" font-size="13" transform="rotate(-90 18 ${height / 2})">Variability ratio - 1 (β)</text>
-          ${diagramElements}
-          ${legend}
+          <text x="${width / 2}" y="${height - 16}" text-anchor="middle" fill="#9bc9c0" font-size="13">Bias ratio - 1 (alpha)</text>
+          <text x="18" y="${height / 2}" text-anchor="middle" fill="#9bc9c0" font-size="13" transform="rotate(-90 18 ${height / 2})">Variability ratio - 1 (beta)</text>
+          ${labels}
         </svg>
       `;
     }
@@ -1288,8 +1198,6 @@ def climate_diagnostic(payload: ClimateDiagnosticRequest) -> dict:
                     "name": item["name"],
                     "alpha": float(item["alpha"]),
                     "beta": float(item["beta"]),
-                    "x2": float(item["x2"]),
-                    "y2": float(item["y2"]),
                     "correlation": float(item["r"]),
                     "kge": float(item["kge"]),
                     "error_total_pct": float(item["e_total"]),
